@@ -11,6 +11,11 @@ namespace LibraryAPI.Models
 		public int checkedOutBy { get; set; }
 		public DateTime checkedOutDate { get; set; }
 		public string imgUrl { get; set; }
-	}
+
+        public override string ToString()
+        {
+            return title;
+        }
+    }
 }
 

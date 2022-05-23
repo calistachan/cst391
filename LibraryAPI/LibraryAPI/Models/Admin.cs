@@ -5,6 +5,7 @@ namespace LibraryAPI.Models
 	{
 		public string username { get; set; }
 		public string password { get; set; }
+		public Guid id { get; set; }
 	}
 }
 

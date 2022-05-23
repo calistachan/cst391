@@ -6,15 +6,17 @@ namespace LibraryAPI.Data
 {
 	public class LibraryContext: DbContext
 	{
-		public DbSet<Book> Books;
-		public DbSet<Admin> Admins;
-		public DbSet<Transaction> Transactions;
-		public DbSet<User> Users;
+		public DbSet<Book> Books { get; set; }
+		public DbSet<Admin> Admins { get; set; }
+		public DbSet<Transaction> Transactions { get; set; }
+		public DbSet<User> Users { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-			//Connection string goes here
-			optionsBuilder.UseMySQL(DBProp.connectionString);
+
+			var serverVersion = new MySqlServerVersion(new Version(8, 0, 28));
+
+			optionsBuilder.UseMySql(DBProp.connectionString, serverVersion);
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -11,10 +11,13 @@
     <None Remove="Models\" />
     <None Remove="Data\" />
     <None Remove="MySql.Data.EntityFrameworkCore" />
+    <None Remove="Microsoft.Bcl.AsyncInterfaces" />
+    <None Remove="Pomelo.EntityFrameworkCore.MySql" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.22" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />

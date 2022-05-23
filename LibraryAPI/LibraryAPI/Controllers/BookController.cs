@@ -13,74 +13,37 @@ namespace LibraryAPI.Controllers
     [Route("api/[controller]")]
     public class BookController : Controller
     {
-        private Book[] defaultBooks = new Book[]
-        {
-            new Book {bookId = Guid.NewGuid(),
-                title = "Harry Potter",
-                author = "J.K. Rowling",
-                checkedOut = false,
-                checkedOutBy = -1,
-                isbnThirteen = "9780590353427",
-                imgUrl = "https://images-na.ssl-images-amazon.com/images/I/81iqZ2HHD-L.jpg",
-                checkedOutDate = DateTime.MinValue
-            },
-            new Book {bookId = Guid.NewGuid(),
-                title = "1984",
-                author = "George Orwell",
-                checkedOut = false,
-                checkedOutBy = -1,
-                isbnThirteen = "9780451524935",
-                imgUrl = "https://m.media-amazon.com/images/P/0451524934.01._SCLZZZZZZZ_SX500_.jpg",
-                checkedOutDate = DateTime.MinValue
-            }
-        };
-
-        //For dev
-        [HttpGet]
-        [Route("reset")]
-        public async Task Reset()
-        {
-            using (var context = new LibraryContext())
-            {
-                await context.Database.EnsureDeletedAsync();
-                await context.Database.EnsureCreatedAsync();
-
-                foreach(Book book in defaultBooks)
-                {
-                    context.Books.Add(book);
-                }
-                context.SaveChanges();
-            }
-        }
-
+        
 
         // GET: api/values
         [HttpGet]
+        [Route("all")]
         public List<Book> Get()
         {
             using(var context = new LibraryContext())
             {
                 context.Database.EnsureCreated();
-
-                return context.Books.ToList();
+                
+                List<Book> books = context.Books.ToList();
+                Console.WriteLine(books);
+                return books;
             }
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public Book Get(Guid id)
+        [HttpGet]
+        public Book GetBook(Guid id)
         {
             using (var context = new LibraryContext())
             {
                 context.Database.EnsureCreated();
-
                 return context.Books.Where(o => o.bookId == id).FirstOrDefault();
             }
         }
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]Book book)
+        public Book Post([FromBody]Book book)
         {
             book.bookId = Guid.NewGuid();
             using (var context = new LibraryContext())
@@ -90,45 +53,115 @@ namespace LibraryAPI.Controllers
                 context.Books.Add(book);
 
                 context.SaveChanges();
+
+                return book;
             }
         }
 
         [HttpPost]
         [Route("checkout")]
-        public void Post([FromBody] Guid bookId, [FromBody] int accountNumber)
+        public string Checkout([FromBody] CheckOutRequest request)
         {
             using (var context = new LibraryContext())
             {
+                Console.WriteLine("I was hit: Guid: " + request.bookId + ", accountNumber" + request.accountNumber);
                 context.Database.EnsureCreated();
 
-                Book book = context.Books.Where(o => o.bookId == bookId).FirstOrDefault();
+                Book book = context.Books.Where(o => o.bookId == request.bookId).FirstOrDefault();
                 if(book != null)
                 {
                     book.checkedOut = true;
-                    book.checkedOutBy = accountNumber;
+                    book.checkedOutBy = request.accountNumber;
                     book.checkedOutDate = DateTime.Now;
-                    context.Books.Add(book);
+
+                    Transaction t = new Transaction {
+                        bookId = book.bookId,
+                        date = DateTime.Now,
+                        detail = "Checked out by " + request.accountNumber,
+                        transactionId = Guid.NewGuid()
+                    };
+                    context.Transactions.Add(t);
                     context.SaveChanges();
+
+                    return "Checked out: " + book.title;
                 }
+
+                return "Book does not exist";
+            }
+        }
+
+        [HttpPost]
+        [Route("return")]
+        public string Return([FromBody] ReturnRequest request)
+        {
+            using (var context = new LibraryContext())
+            {
+                Console.WriteLine("I was hit: Guid: " + request.bookId + ", accountNumber" + request.accountNumber);
+                context.Database.EnsureCreated();
+
+                Book book = context.Books.Where(o => o.bookId == request.bookId).FirstOrDefault();
+                if (book != null)
+                {
+                    book.checkedOut = false;
+                    book.checkedOutBy = -1;
+                    book.checkedOutDate = DateTime.MinValue;
+
+                    Transaction t = new Transaction
+                    {
+                        bookId = book.bookId,
+                        date = DateTime.Now,
+                        detail = "Returned by " + request.accountNumber,
+                        transactionId = Guid.NewGuid()
+                    };
+
+                    context.Transactions.Add(t);
+                    context.SaveChanges();
+
+                    return "Returned: " + book.title;
+                }
+
+                return "Failed to return";
             }
         }
 
 
         // DELETE api/values/5
-        [HttpDelete("{isbn}")]
-        public void Delete(string isbn)
+        [HttpDelete]
+        public string Delete([FromBody]DeleteBookRequest id)
         {
             using (var context = new LibraryContext())
             {
                 context.Database.EnsureCreated();
-
-                Book book = context.Books.Where(o => o.isbnThirteen == isbn).FirstOrDefault();
-                if(book != null)
+                Console.WriteLine(id.id);
+                Book book = context.Books.Where(o => o.bookId == id.id).FirstOrDefault();
+                if (book != null)
                 {
                     context.Books.Remove(book);
                 }
+                context.SaveChanges();
+
+                return "Deleted: " + book.title;
             }
+
         }
     }
+
+    public class CheckOutRequest
+    {
+        public Guid bookId { get; set; }
+        public int accountNumber { get; set; }
+    }
+
+    public class ReturnRequest
+    {
+        public Guid bookId { get; set; }
+        public int accountNumber { get; set; }
+    }
+
+    public class DeleteBookRequest
+    {
+        public Guid id { get; set; }
+    }
+
 }
 
