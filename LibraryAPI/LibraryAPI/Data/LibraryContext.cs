@@ -14,8 +14,8 @@ namespace LibraryAPI.Data
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 			//Connection string goes here
-			optionsBuilder.UseMySQL("Server=database-1.czz4uzozuwco.us-east-2.rds.amazonaws.com;Port=3306;Database=library_app;Uid=admin;Pwd=myPassword;");
-        }
+			optionsBuilder.UseMySQL(DBProp.connectionString);
+		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
