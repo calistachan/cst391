@@ -11,6 +11,7 @@ namespace LibraryAPI.Data
 		public DbSet<Transaction> Transactions { get; set; }
 		public DbSet<User> Users { get; set; }
 
+		//I am a comment
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 

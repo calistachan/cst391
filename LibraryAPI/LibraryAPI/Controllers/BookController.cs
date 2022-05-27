@@ -18,7 +18,7 @@ namespace LibraryAPI.Controllers
         // GET: api/values
         [HttpGet]
         [Route("all")]
-        public List<Book> Get()
+        public List<Book> GetAllBooks()
         {
             using(var context = new LibraryContext())
             {
@@ -32,7 +32,7 @@ namespace LibraryAPI.Controllers
 
         // GET api/values/5
         [HttpGet]
-        public Book GetBook(Guid id)
+        public Book GetABook(Guid id)
         {
             using (var context = new LibraryContext())
             {
