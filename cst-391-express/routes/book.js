@@ -5,11 +5,12 @@ const uuid = require('uuid')
 
 var router = express.Router();
 
-/* GET users listing. */
+/* GET all books from db. */
 router.get('/all', async function(req, res, next) {
-    console.log(dbprop.exists);
+    // Setup mysql
     const mysql = require('mysql2/promise');
 
+    // Create a connection to the DB
     const connection = await mysql.createConnection({
         host: dbprop.host,
         user: dbprop.user,
@@ -17,21 +18,22 @@ router.get('/all', async function(req, res, next) {
         database: dbprop.database
       })
       
+    // Select all books
     let sql = `SELECT * FROM Books`;
 
+    // Wait for query to finish
     const [rows, fields] = await connection.execute(sql);
 
-    for(const i in rows) {
-        console.log(rows[i])
-    }
+    // Respond with query result
     res.send(rows);
 });
 
-/* GET users listing. */
+/* GET a specific book by bookId. */
 router.get('/', async function(req, res, next) {
-    console.log(dbprop.exists);
+    // Setup mysql
     const mysql = require('mysql2/promise');
 
+    // Create a connection to the DB
     const connection = await mysql.createConnection({
         host: dbprop.host,
         user: dbprop.user,
@@ -39,30 +41,38 @@ router.get('/', async function(req, res, next) {
         database: dbprop.database
       })
 
+    // Select all books
     let sql = `SELECT * FROM Books`;
     
     const [rows, fields] = await connection.execute(sql);
 
     var result;
+
+    // Loop through results, return the book with matching id
     for(const i in rows) {
         if(rows[i].bookId == req.query.id) {
             res.send(rows[i]);
             return;
         }
     }
+
+    // Return all if no row found
     res.send(rows);
 });
 
-/*Expected body data
+/*
+POST Create a new book
+Expected body data
 	string isbnThirteen 
 	string title 
 	string author 
 	string imgUrl 
 */
 router.post('/', async function(req, res, next) {
-    console.log(dbprop.exists);
+    // Setup mysql
     const mysql = require('mysql2/promise');
 
+    // Connect to db
     const connection = await mysql.createConnection({
         host: dbprop.host,
         user: dbprop.user,
@@ -70,8 +80,10 @@ router.post('/', async function(req, res, next) {
         database: dbprop.database
       })
 
+    // Insert statement
     let sql = `INSERT INTO Books(bookId, isbnThirteen, title, author, imgUrl, checkedOut, checkedOutBy) values (?, ?, ?, ?, ?, ?, ?)`;
 
+    // Execute query with POST body data
     const [rows, fields] = await connection.execute(sql, 
         [uuid.v4(), 
         req.body.isbnThirteen, 
@@ -106,7 +118,8 @@ router.delete('/', async function(req, res, next) {
 });
 
 
-//Check out
+// Set check out to true, checkedOutBy to user account number, 
+// and checked out date to the current time
 router.post('/checkout', async function(req, res, next) {
     console.log(dbprop.exists);
     const mysql = require('mysql2/promise');
@@ -130,7 +143,7 @@ router.post('/checkout', async function(req, res, next) {
     res.send("Book checked out: " + req.body.bookId + ", by: " + req.body.accountNumber);
 });
 
-//Check out
+// Return a book and reset checked out factors
 router.post('/return', async function(req, res, next) {
     console.log(dbprop.exists);
     const mysql = require('mysql2/promise');
