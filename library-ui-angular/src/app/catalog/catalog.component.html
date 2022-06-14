@@ -1,0 +1,74 @@
+<style>
+    div.hover {
+        background-color: gray;
+    }
+
+    div.bookListing {
+        border-radius: 25px;
+        border-width: 2px;
+        border-color: black;
+        border-style: solid;
+        padding: 10px;
+        margin: 10px 10px 10px 10px;
+    }
+
+    img.bookListing {
+        height: 40px;
+        width: 40px;
+        margin-top: 10px;
+    }
+
+    p.bookListing {
+        display: inline-block;
+    }
+
+    img.selectedBook {
+        max-height: 320px;
+        max-width: 320px;
+    }
+</style>
+
+<div *ngIf="loading">
+    <p>Loading...</p>
+</div>
+<div *ngIf="!loading">
+    <div *ngIf="selectedBook != null">
+        <button (click)="backToCatalog()">Back to Catalog</button>
+        <br>
+        <img src={{selectedBook.imgUrl}} class="selectedBook"/>
+        <h2>{{selectedBook.title}}</h2>
+        <h4>Author: {{selectedBook.author}}</h4>
+        <h4>ISBN: {{selectedBook.isbnThirteen}}</h4>
+        <h4>Status: {{selectedBook.checkedOut ? "Checked Out by " + selectedBook.checkedOutBy : "Available"}}</h4>
+        <h4>Book ID: {{selectedBook.bookId}}</h4>
+        <div *ngIf="!selectedBook.checkedOut && !detailLoading">
+            <form [formGroup]="checkOutForm" (ngSubmit)="onCheckOut(checkOutForm.value, selectedBook)"> <div class="form-group">
+                <p style="color: red">{{checkOutError}}</p>
+                <label>Account Number:</label>
+                <input type="text" class="form-control" formControlName="account"> 
+                <button type="submit" class="btn btn-success">Check Out</button>
+                </div>
+            </form> 
+        </div>
+        <div *ngIf="selectedBook.checkedOut && !detailLoading">
+            <form [formGroup]="returnForm" (ngSubmit)="onReturn(returnForm.value, selectedBook)"> <div class="form-group">
+                <p style="color: red">{{returnError}}</p>
+                <label>Account Number:</label>
+                <input type="text" class="form-control" formControlName="account"> 
+                <button type="submit" class="btn btn-success">Return Book</button>
+                </div>
+            </form> 
+        </div>
+        <div *ngIf="detailLoading">
+            <p>Updating book status...</p>
+        </div>
+    </div>
+    <div *ngIf="selectedBook == null">
+        <div *ngFor="let book of books" class="bookListing" (click)="onBookListingClick(book)">
+            <img src={{book.imgUrl}} class="bookListing"/>
+            <p class="bookListing" style="margin-left: 5x;">{{book.title}}, </p>
+            <p class="bookListing" style="margin-left: 20px;">{{book.author}}, </p>
+            <p class="bookListing" style="margin-left: 20px;"> ID: {{book.bookId}}</p>
+        </div>
+    </div>
+</div>

@@ -13,17 +13,17 @@ namespace LibraryAPI.Controllers
     [Route("api/[controller]")]
     public class BookController : Controller
     {
-        
+
 
         // GET: api/values
         [HttpGet]
         [Route("all")]
         public List<Book> GetAllBooks()
         {
-            using(var context = new LibraryContext())
+            using (var context = new LibraryContext())
             {
                 context.Database.EnsureCreated();
-                
+
                 List<Book> books = context.Books.ToList();
                 Console.WriteLine(books);
                 return books;
@@ -43,7 +43,7 @@ namespace LibraryAPI.Controllers
 
         // POST api/values
         [HttpPost]
-        public Book Post([FromBody]Book book)
+        public Book Post([FromBody] Book book)
         {
             book.bookId = Guid.NewGuid();
             using (var context = new LibraryContext())
@@ -60,7 +60,7 @@ namespace LibraryAPI.Controllers
 
         [HttpPost]
         [Route("checkout")]
-        public string Checkout([FromBody] CheckOutRequest request)
+        public Book Checkout([FromBody] CheckOutRequest request)
         {
             using (var context = new LibraryContext())
             {
@@ -68,7 +68,7 @@ namespace LibraryAPI.Controllers
                 context.Database.EnsureCreated();
 
                 Book book = context.Books.Where(o => o.bookId == request.bookId).FirstOrDefault();
-                if(book != null)
+                if (book != null)
                 {
                     book.checkedOut = true;
                     book.checkedOutBy = request.accountNumber;
@@ -83,16 +83,16 @@ namespace LibraryAPI.Controllers
                     context.Transactions.Add(t);
                     context.SaveChanges();
 
-                    return "Checked out: " + book.title;
+                    return book;
                 }
 
-                return "Book does not exist";
+                return null;
             }
         }
 
         [HttpPost]
         [Route("return")]
-        public string Return([FromBody] ReturnRequest request)
+        public Book Return([FromBody] ReturnRequest request)
         {
             using (var context = new LibraryContext())
             {
@@ -117,23 +117,23 @@ namespace LibraryAPI.Controllers
                     context.Transactions.Add(t);
                     context.SaveChanges();
 
-                    return "Returned: " + book.title;
+                    return book;
                 }
 
-                return "Failed to return";
+                return null;
             }
         }
 
 
         // DELETE api/values/5
-        [HttpDelete]
-        public string Delete([FromBody]DeleteBookRequest id)
+        [HttpDelete("{id}")]
+        public string Delete(Guid id)
         {
             using (var context = new LibraryContext())
             {
                 context.Database.EnsureCreated();
-                Console.WriteLine(id.id);
-                Book book = context.Books.Where(o => o.bookId == id.id).FirstOrDefault();
+                Console.WriteLine(id);
+                Book book = context.Books.Where(o => o.bookId == id).FirstOrDefault();
                 if (book != null)
                 {
                     context.Books.Remove(book);

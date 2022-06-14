@@ -1,0 +1,7 @@
+<form [formGroup]="registrationForm" (ngSubmit)="onRegister(registrationForm.value)"> <div class="form-group">
+    <label>Name:</label>
+    <input type="text" class="form-control" formControlName="name"> 
+    <button type="submit" class="btn btn-success">Register</button>
+    </div>
+</form>
+<p>{{registerMessage}}</p>

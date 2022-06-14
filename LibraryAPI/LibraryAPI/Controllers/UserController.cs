@@ -14,7 +14,7 @@ namespace LibraryAPI.Controllers
     public class UserController : Controller
     {
         [HttpGet]
-        public int Get(string name)
+        public int CreateUser(string name)
         {
             using(var context = new LibraryContext())
             {

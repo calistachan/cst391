@@ -1,0 +1,48 @@
+<style>
+  li.nav {
+    display: inline-block;
+    margin-right: 20px;
+  }
+
+  li.navLink:hover {
+    background-color: #ccfced;
+  }
+</style>
+<nav>
+  <div style="background-color: aquamarine;">
+    <ul style="list-style-type:none">
+      <a routerLink="/">
+        <li class="nav navlink">
+          <h2>GCU Library</h2>
+        </li>
+      </a>
+      <a routerLink="/catalog">
+        <li class="nav navLink">
+          <div>
+            <h2>Catalog</h2>
+          </div>
+        </li>
+      </a>
+      <a routerLink="/register">
+        <li class="nav navLink">
+          <div>
+            <h2>Register</h2>
+          </div>
+        </li>
+      </a>
+      <a routerLink="/admin">
+        <li class="nav navLink">
+          <div>
+            <h2>Admin</h2>
+          </div>
+        </li>
+      </a>
+    </ul>
+  </div>
+</nav>
+<div *ngIf="router.url == '/'">
+  <h2>Welcome to GCU library</h2>
+  <p>Click register to receive a account number, or if already signed up,</p>
+  <p>click the catalog to view available books.</p>
+</div>
+<router-outlet></router-outlet>

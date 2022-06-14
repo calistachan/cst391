@@ -1,0 +1,26 @@
+<button (click)="swapMode()">{{buttonText}}</button>
+<div *ngIf="createActive">
+    <h2>Add a book:</h2>
+    <form [formGroup]="bookForm" (ngSubmit)="onCreate(bookForm.value)"> <div class="form-group">
+        <label>ISBN-13:</label><br>
+        <input type="text" class="form-control" formControlName="isbnThirteen"> <br>
+        <label>Title:</label><br>
+        <input type="text" class="form-control" formControlName="title"> <br>
+        <label>Author:</label><br>
+        <input type="text" class="form-control" formControlName="author"> <br>
+        <label>Image URL:</label><br>
+        <input type="text" class="form-control" formControlName="imgUrl"> <br>
+        <button type="submit" class="btn btn-success">Add Book</button>
+        </div>
+    </form>
+</div>
+<div *ngIf="deleteActive">
+    <h2>Delete a book:</h2>
+    <form [formGroup]="deleteForm" (ngSubmit)="onDelete(deleteForm.value)"> <div class="form-group">
+        <label>Book ID:</label>
+        <input type="text" class="form-control" formControlName="id"> 
+        <button type="submit" class="btn btn-success">Delete</button>
+        </div>
+    </form>
+</div>
+<p>{{resultMessage}}</p>
