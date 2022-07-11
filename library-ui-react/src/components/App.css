@@ -1,0 +1,8 @@
+li.nav {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+li.navLink:hover {
+  background-color: #ccfced;
+}
